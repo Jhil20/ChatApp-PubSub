@@ -6,14 +6,10 @@ import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
 import com.google.pubsub.v1.*;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
 
 import java.io.IOException;
 
-@RestController
-@RequestMapping("/subscriber")
 public class subscribe {
 
     @Value("${gcp.project-id}")

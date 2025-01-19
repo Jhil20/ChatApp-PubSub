@@ -7,17 +7,14 @@ import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.Topic;
 import com.google.pubsub.v1.TopicName;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-@RestController
-@RequestMapping("/publisher")
 public class publish {
     @Value("${gcp.project-id}")
     private String projectId;
