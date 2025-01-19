@@ -1,9 +1,7 @@
-package org.example.demo1_1.com.controller;
+package org.example.demo1_1.com.service;
 
 import com.google.api.gax.rpc.ApiException;
-import com.google.cloud.pubsub.v1.AckReplyConsumer;
-import com.google.cloud.pubsub.v1.MessageReceiver;
-import com.google.cloud.pubsub.v1.Subscriber;
+import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
 import com.google.pubsub.v1.*;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 @RestController
 @RequestMapping("/subscriber")
@@ -23,11 +19,8 @@ public class subscribe {
     @Value("${gcp.project-id}")
     private String projectId;
 
-    @Value("${gcp.pubsub.subscription-name}")
-    private String subscriptionId;
 
-    @GetMapping("/subscribeMessage")
-    public String subscribeMessage() {
+    public String subscribeMessage(String subscriptionId) {
         StringBuilder receiveMessageBuilder = new StringBuilder();
 
         // Define the project and subscription
@@ -71,5 +64,19 @@ public class subscribe {
         // Return the accumulated messages
         System.out.println("All received messages: " + receiveMessageBuilder);
         return receiveMessageBuilder.toString();
+    }
+
+    public String createSubscription(String subscriptionId,String topicId) throws IOException {
+        try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+            TopicName topicName = TopicName.of(projectId, topicId);
+            SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
+            // Create a pull subscription with default acknowledgement deadline of 10 seconds.
+            // Messages not successfully acknowledged within 10 seconds will get resent by the server.
+            Subscription subscription =
+                    subscriptionAdminClient.createSubscription(
+                            subscriptionName, topicName, PushConfig.getDefaultInstance(), 10);
+            System.out.println("Created pull subscription: " + subscription.getName());
+            return subscription.getName();
+        }
     }
 }

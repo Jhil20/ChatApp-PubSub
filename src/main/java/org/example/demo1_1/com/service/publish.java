@@ -1,10 +1,13 @@
-package org.example.demo1_1.com.controller;
+package org.example.demo1_1.com.service;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.pubsub.v1.Publisher;
+import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
+import com.google.pubsub.v1.Topic;
 import com.google.pubsub.v1.TopicName;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +22,14 @@ public class publish {
     @Value("${gcp.project-id}")
     private String projectId;
 
-    @Value("${gcp.pubsub.topic-name}")
-    private String topicId;
+    final
+    subscribe subscribe;
 
+    public publish(subscribe subscribe) {
+        this.subscribe = subscribe;
+    }
 
-    @PostMapping("/publishMessage")
-    public ResponseEntity<String> publishMessage(@RequestParam String message) throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<String> publishMessage(String message,String topicId) throws IOException, ExecutionException, InterruptedException {
         TopicName topicName = TopicName.of(projectId, topicId);
         Publisher publisher = null;
         try {
@@ -42,6 +47,17 @@ public class publish {
                 publisher.shutdown();
                 publisher.awaitTermination(5, TimeUnit.SECONDS);
             }
+        }
+    }
+
+    public String createTopic (String topicId,String subscriptionId) throws IOException{
+        try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+            TopicName topicName = TopicName.of(projectId, topicId);
+            Topic topic = topicAdminClient.createTopic(topicName);
+            String subscriptionName = subscribe.createSubscription(subscriptionId,topicId);
+            System.out.println("Created topic: " + topic.getName());
+            System.out.println("Created sub: " + subscriptionName);
+            return topic.getName();
         }
     }
 }
