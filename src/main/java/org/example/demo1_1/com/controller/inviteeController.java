@@ -1,11 +1,8 @@
 package org.example.demo1_1.com.controller;
 
 
-import ch.qos.logback.core.util.DelayStrategy;
 import org.example.demo1_1.com.bean.User;
-import org.example.demo1_1.com.bean.memberType;
 import org.example.demo1_1.com.service.subscribe;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +13,6 @@ import static org.example.demo1_1.com.bean.memberType.INVITEE;
 @RestController
 @RequestMapping("/invitee")
 public class inviteeController {
-    @Autowired
     subscribe subscribe;
 
     @PostMapping("/joinRoom")

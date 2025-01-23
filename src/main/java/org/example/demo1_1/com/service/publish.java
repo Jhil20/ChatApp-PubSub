@@ -7,14 +7,17 @@ import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.Topic;
 import com.google.pubsub.v1.TopicName;
+import org.example.demo1_1.com.bean.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+@Service
 public class publish {
     @Value("${gcp.project-id}")
     private String projectId;
@@ -26,17 +29,19 @@ public class publish {
         this.subscribe = subscribe;
     }
 
-    public ResponseEntity<String> publishMessage(String message,String topicId) throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<String> publishMessage(User user) throws IOException, ExecutionException, InterruptedException {
+        String topicId = user.getRoomName();
+        String message = user.getMessage();
         TopicName topicName = TopicName.of(projectId, topicId);
         Publisher publisher = null;
         try {
             publisher =Publisher.newBuilder(topicName).build();
             ByteString data = ByteString.copyFromUtf8(message);
-            PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
+            PubsubMessage pubsubMessage = PubsubMessage.newBuilder().putAttributes("Sender Id", user.getUsername()).setData(data).build();
             ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
             String messageId = messageIdFuture.get();
             System.out.println("Published message ID: " + messageId);
-            return ResponseEntity.ok(message+" "+messageId);
+            return ResponseEntity.ok("Message : "+message+" Message ID : "+messageId);
         }
         finally {
             if(publisher != null)

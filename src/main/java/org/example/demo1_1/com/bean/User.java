@@ -4,6 +4,15 @@ public class User {
     private String username;
     private memberType memberType;
     private String roomName;
+    private String message;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
     public String getRoomName() {
         return roomName;

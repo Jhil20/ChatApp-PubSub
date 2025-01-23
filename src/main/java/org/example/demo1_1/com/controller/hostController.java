@@ -2,7 +2,6 @@ package org.example.demo1_1.com.controller;
 
 import org.example.demo1_1.com.bean.User;
 import org.example.demo1_1.com.service.publish;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +12,7 @@ import static org.example.demo1_1.com.bean.memberType.HOST;
 @RestController
 @RequestMapping("/host")
 public class hostController {
-    @Autowired
+
     publish publish;
 
     @PostMapping("/createRoom")

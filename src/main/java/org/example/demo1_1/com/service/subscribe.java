@@ -6,10 +6,12 @@ import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
 import com.google.pubsub.v1.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 
 import java.io.IOException;
 
+@Service
 public class subscribe {
 
     @Value("${gcp.project-id}")
