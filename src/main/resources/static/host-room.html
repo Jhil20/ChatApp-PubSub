@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Room</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="container">
+    <h1>Host a Room</h1>
+    <form id="hostRoomForm">
+        <input type="text" id="username" readonly>
+        <input type="text" id="roomName" placeholder="Enter Room Name" required>
+        <input type="hidden" id="memberType" value="HOST">
+        <button type="submit">Create Room</button>
+    </form>
+</div>
+
+<script src="js/host-room.js"></script>
+</body>
+</html>

@@ -3,30 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Application</title>
+    <title>Room Management</title>
     <link rel="stylesheet" href="css/main.css">
-</head>
 <body>
-<!-- Username Input Screen -->
-<div id="usernameScreen" class="username-container">
-    <h1>Enter Your Username</h1>
-    <input type="text" id="usernameInput" placeholder="Enter username" autofocus>
-    <button id="startChatBtn">Start Chat</button>
-</div>
-
-<!-- Chat Screen (Hidden Initially) -->
-<div id="chatScreen" class="chat-container" style="display: none;">
-    <div class="chat-header">
-        <h2>Chat Room</h2>
-        <span id="usernameDisplay"></span>
+<div class="container">
+    <div class="username-input">
+        <h1>Enter Your Username</h1>
+        <input type="text" id="username" placeholder="Username" />
+        <button onclick="submitUsername()">Submit</button>
     </div>
-    <div class="chat-box" id="chatBox">
-        <!-- Messages will appear here -->
-    </div>
-    <div class="chat-input">
-        <input type="text" id="message" placeholder="Type a message..." autofocus>
-        <button id="sendBtn">Send</button>
-        <button id="receiveBtn">Receive</button>
+    <div class="options">
+        <h1>What would you like to do?</h1>
+        <button onclick="hostRoom()">Host a Room</button>
+        <button onclick="joinRoom()">Join a Room</button>
     </div>
 </div>
 
