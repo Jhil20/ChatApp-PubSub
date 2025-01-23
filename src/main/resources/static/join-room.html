@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Room</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="container">
+    <h1>Host a Room</h1>
+    <form id="joinRoomForm">
+        <input type="text" id="username" readonly>
+        <input type="text" id="roomName" placeholder="Enter Room Name" required>
+        <input type="hidden" id="memberType" value="INVITEE">
+        <button type="submit">Join Room</button>
+    </form>
+</div>
+
+<script src="js/join-room.js"></script>
+</body>
+</html>
