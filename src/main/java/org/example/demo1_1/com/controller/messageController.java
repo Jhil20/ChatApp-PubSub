@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -26,9 +27,11 @@ public class messageController {
         return publish.publishMessage(user);
     }
 
-    @GetMapping("/receiveMessage")
-    public ResponseEntity<String> receiveMessage(@RequestBody User user) throws IOException, ExecutionException, InterruptedException {
-        return ResponseEntity.ok(subscribe.subscribeMessage(user.getRoomName()));
+    @PostMapping("/receiveMessage")
+    public ResponseEntity<Map<String,String>> receiveMessage(@RequestBody User user) throws IOException, ExecutionException, InterruptedException {
+        Map<String,String> receivedMessages = subscribe.subscribeMessage(user.getUsername());
+        System.out.print(receivedMessages);
+        return ResponseEntity.ok(receivedMessages);
     }
 
 }

@@ -15,7 +15,7 @@ function submitUsername() {
 function hostRoom() {
     // Redirect to host room page (replace URL with your desired path)
     alert("Redirecting to host room...");
-    window.location.href = 'host-room.html';
+    window.location.href = '/host-room.html';
 }
 
 function joinRoom() {

@@ -28,9 +28,17 @@ document.getElementById('joinRoomForm').addEventListener('submit', async (e) => 
             body: JSON.stringify(userData)
         });
 
-        const result = await response.text();
-        alert(result);
-        // Optionally redirect to chat room or show success message
+        if (response.ok) {
+            const result = await response.text();
+            // alert(result);
+
+            // Save roomName and redirect to chat page
+            localStorage.setItem('roomName', userData.roomName);
+            localStorage.setItem('username', userData.username+'-1234');
+            window.location.href = 'chat-page.html';
+        } else {
+            alert('Failed to create room');
+        }
     } catch (error) {
         console.error('Error:', error);
         alert('Failed to create room');

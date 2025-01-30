@@ -1,15 +1,19 @@
 package org.example.demo1_1.com.service;
 
-import com.google.api.gax.rpc.ApiException;
+import com.google.cloud.pubsub.v1.AckReplyConsumer;
+import com.google.cloud.pubsub.v1.MessageReceiver;
+import com.google.cloud.pubsub.v1.Subscriber;
 import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
-import com.google.cloud.pubsub.v1.stub.SubscriberStub;
-import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
 import com.google.pubsub.v1.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Service
 public class subscribe {
@@ -18,50 +22,42 @@ public class subscribe {
     private String projectId;
 
 
-    public String subscribeMessage(String subscriptionId) {
-        StringBuilder receiveMessageBuilder = new StringBuilder();
+    public Map<String,String> subscribeMessage(String subscriptionId) {
+        Map<String,String> receivedMessages = new HashMap<>();
 
-        // Define the project and subscription
-        ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(projectId, subscriptionId);
+        ProjectSubscriptionName subscriptionName =
+                ProjectSubscriptionName.of(projectId, subscriptionId);
 
-        // Initialize the SubscriberStub for low-level control
-        try (SubscriberStub subscriberStub = SubscriberStubSettings.newBuilder().build().createStub()) {
+        // Instantiate an asynchronous message receiver.
+        MessageReceiver receiver =
+                (PubsubMessage message, AckReplyConsumer consumer) -> {
+                    // Handle incoming message, then ack the received message.
+                    System.out.println("Id: " + message.getMessageId());
+                    System.out.println("Data: " + message.getData().toStringUtf8());
+                    // Print message attributes.
+                    message
+                            .getAttributesMap()
+                            .forEach((key, value) -> {receivedMessages.put(value,message.getData().toStringUtf8());
+                                System.out.println(key + " = " + value);
+                                System.out.println(message.getData().toStringUtf8());
+                            });
+                    consumer.ack();
+                };
 
-            // Create a PullRequest for fetching messages
-            PullRequest pullRequest = PullRequest.newBuilder()
-                    .setSubscription(subscriptionName.toString())
-                    .setMaxMessages(10) // Number of messages to pull
-                    .setReturnImmediately(false) // Wait for messages if none are available
-                    .build();
+        Subscriber subscriber = null;
+        try {
+            subscriber = Subscriber.newBuilder(subscriptionName, receiver).build();
+            // Start the subscriber.
+            subscriber.startAsync().awaitRunning();
+            System.out.printf("Listening for messages on %s:\n", subscriptionName.toString());
+            // Allow the subscriber to run for 30s unless an unrecoverable error occurs.
+            subscriber.awaitTerminated(5, TimeUnit.SECONDS);
 
-            // Pull messages
-            PullResponse pullResponse = subscriberStub.pullCallable().call(pullRequest);
-
-            // Process each received message
-            for (ReceivedMessage message : pullResponse.getReceivedMessagesList()) {
-                String data = message.getMessage().getData().toStringUtf8();
-                System.out.println("Id: " + message.getMessage().getMessageId());
-                System.out.println("Data: " + data);
-
-                // Append message data to StringBuilder
-                receiveMessageBuilder.append(data).append("\n");
-
-                // Acknowledge the message to Pub/Sub
-                subscriberStub.acknowledgeCallable().call(
-                        AcknowledgeRequest.newBuilder()
-                                .setSubscription(subscriptionName.toString())
-                                .addAckIds(message.getAckId())
-                                .build()
-                );
-            }
-
-        } catch (IOException | ApiException e) {
-            System.err.println("Error during Pub/Sub pull: " + e.getMessage());
+        } catch (TimeoutException timeoutException) {
+            // Shut down the subscriber after 30s. Stop receiving messages.
+            subscriber.stopAsync();
         }
-
-        // Return the accumulated messages
-        System.out.println("All received messages: " + receiveMessageBuilder);
-        return receiveMessageBuilder.toString();
+        return receivedMessages;
     }
 
     public String createSubscription(String subscriptionId,String topicId) throws IOException {
