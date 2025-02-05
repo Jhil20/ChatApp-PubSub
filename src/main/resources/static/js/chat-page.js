@@ -89,4 +89,4 @@ messageInput.addEventListener("keypress", (e) => {
 });
 
 // Poll for new messages every 2 seconds
-setInterval(receiveMessages, 2000);
+setInterval(receiveMessages, 5000);
